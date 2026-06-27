@@ -23,37 +23,26 @@
             if (row.dataset.mobileReady) return;
             row.dataset.mobileReady = '1';
 
-            var touchStartX = 0, isSwiping = false;
+            var touchStartY = 0;
 
             row.addEventListener('touchstart', function(e) {
-                touchStartX = e.touches[0].clientX;
-                isSwiping = false;
-            }, { passive: true });
-
-            row.addEventListener('touchmove', function(e) {
-                var diff = touchStartX - e.touches[0].clientX;
-                if (Math.abs(diff) > 10) isSwiping = true;
-                if (diff > 0 && diff < 120) {
-                    row.style.transform = 'translateX(-' + diff + 'px)';
-                }
+                touchStartY = e.touches[0].clientY;
             }, { passive: true });
 
             row.addEventListener('touchend', function(e) {
-                var diff = touchStartX - (e.changedTouches ? e.changedTouches[0].clientX : touchStartX);
-                if (diff > 60) {
-                    row.classList.add('revealed');
-                    row.style.transform = '';
-                } else {
-                    row.classList.remove('revealed');
-                    row.style.transform = '';
-                }
-                if (!isSwiping && diff < 10) {
-                    showDetailSheet(row);
+                var touchEndY = e.changedTouches ? e.changedTouches[0].clientY : touchStartY;
+                var diff = Math.abs(touchStartY - touchEndY);
+                if (diff < 10) {
+                    row.click();
                 }
             }, { passive: true });
 
-            row.addEventListener('click', function() {
-                if (!isSwiping) showDetailSheet(row);
+            row.addEventListener('click', function(e) {
+                var target = e.target;
+                if (target.closest('.btn') || target.closest('[data-action]')) {
+                    return;
+                }
+                showDetailSheet(row);
             });
         });
     }
@@ -89,19 +78,6 @@
             rowEl.appendChild(v);
             sheet.appendChild(rowEl);
         });
-
-        var actions = row.querySelector('.text-right');
-        if (actions) {
-            var btnGroup = document.createElement('div');
-            btnGroup.style.cssText = 'display:flex;gap:12px;margin-top:24px;';
-            var btns = actions.querySelectorAll('.btn');
-            btns.forEach(function(btn) {
-                var clone = btn.cloneNode(true);
-                clone.style.cssText = 'flex:1;' + (clone.classList.contains('danger') ? '' : '');
-                btnGroup.appendChild(clone);
-            });
-            sheet.appendChild(btnGroup);
-        }
 
         document.body.appendChild(overlay);
         document.body.appendChild(sheet);
@@ -180,77 +156,6 @@
     }
 
     function initSwipeSidebar() {
-        if (window.innerWidth <= 768) return;
-        var sidebar = document.getElementById('sidebar');
-        var overlay = document.getElementById('sidebarOverlay');
-        var toggle = document.getElementById('mobileMenuToggle');
-        if (!sidebar || !overlay) return;
-
-        var touchStartX = 0, isDragging = false, sidebarOpen = false;
-        var SIDEBAR_WIDTH = 280;
-
-        document.addEventListener('touchstart', function(e) {
-            var x = e.touches[0].clientX;
-            sidebarOpen = sidebar.classList.contains('active');
-            if (sidebarOpen) {
-                touchStartX = x;
-                isDragging = true;
-                sidebar.style.transition = 'none';
-            } else if (x < 30) {
-                touchStartX = x;
-                isDragging = true;
-                sidebar.style.transition = 'none';
-                sidebar.style.transform = 'translateX(-100%)';
-                overlay.classList.add('active');
-            }
-        }, { passive: true });
-
-        document.addEventListener('touchmove', function(e) {
-            if (!isDragging) return;
-            var diff = e.touches[0].clientX - touchStartX;
-            if (sidebarOpen) {
-                var translate = Math.max(-SIDEBAR_WIDTH, Math.min(0, diff));
-                sidebar.style.transform = 'translateX(' + translate + 'px)';
-                overlay.style.opacity = 0.5 * (1 + translate / SIDEBAR_WIDTH);
-            } else {
-                var translate = Math.min(0, Math.max(-SIDEBAR_WIDTH, -SIDEBAR_WIDTH + diff));
-                sidebar.style.transform = 'translateX(' + translate + 'px)';
-                overlay.style.opacity = 0.5 * (1 + translate / SIDEBAR_WIDTH);
-            }
-        }, { passive: true });
-
-        document.addEventListener('touchend', function(e) {
-            if (!isDragging) return;
-            isDragging = false;
-            sidebar.style.transition = '';
-            var diff = e.changedTouches[0].clientX - touchStartX;
-            var threshold = SIDEBAR_WIDTH * 0.35;
-            if (sidebarOpen) {
-                if (-diff > threshold) {
-                    sidebar.classList.remove('active');
-                    overlay.classList.remove('active');
-                    sidebar.style.transform = '';
-                    overlay.style.opacity = '';
-                    if (toggle) toggle.classList.remove('active');
-                    document.body.style.overflow = '';
-                } else {
-                    sidebar.classList.add('active');
-                    sidebar.style.transform = '';
-                    overlay.style.opacity = '';
-                }
-            } else {
-                if (diff > threshold) {
-                    sidebar.classList.add('active');
-                    sidebar.style.transform = '';
-                    overlay.style.opacity = '';
-                    if (toggle) toggle.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    overlay.classList.remove('active');
-                    sidebar.style.transform = '';
-                }
-            }
-        }, { passive: true });
     }
 
     function initSearchFilter() {
@@ -288,8 +193,8 @@
         initButtonTouchFeedback();
         initSearchToggle();
         initRevealActions();
-        initMobileRows();
-        initFloatingButton();
+        // initMobileRows is handled in laravel/pages.js
+        // initFloatingButton is no longer needed
         initSearchFilter();
         window.showToast = showToast;
     }
