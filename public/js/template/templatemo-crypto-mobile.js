@@ -56,6 +56,22 @@
     function initSwipeSidebar() {
     }
 
+    function initFloatingButton() {
+        if (window.innerWidth > 768) return;
+        var existingBtn = document.querySelector('.fab-btn');
+        if (existingBtn) return;
+        var headerBtn = document.querySelector('.card-header .btn.primary');
+        if (!headerBtn) return;
+        var fab = document.createElement('button');
+        fab.className = 'fab-btn';
+        fab.innerHTML = '+';
+        fab.setAttribute('aria-label', 'Tambah');
+        fab.addEventListener('click', function() {
+            headerBtn.click();
+        });
+        document.body.appendChild(fab);
+    }
+
     function initSearchFilter() {
         var searchInput = document.querySelector('.search-box input');
         if (!searchInput) return;
@@ -90,6 +106,7 @@
         initSwipeSidebar();
         initButtonTouchFeedback();
         initSearchToggle();
+        initFloatingButton();
         initSearchFilter();
         window.showToast = showToast;
     }
