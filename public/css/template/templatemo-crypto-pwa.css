@@ -33,14 +33,7 @@
     input, select, button, textarea { font-size:16px !important; }
 }
 
-.mobile-card-reveal {
-    position: absolute; top: 0; right: -160px; height: 100%; width: 160px;
-    display: none; transition: right 0.3s ease; z-index: 2;
-}
 @media (max-width: 768px) {
-    .mobile-card-reveal { display: flex; }
-    .market-table tbody tr.revealed .mobile-card-reveal { right: 0; }
-
     .market-table,
     .market-table thead,
     .market-table tbody,
@@ -60,7 +53,7 @@
         transition: transform 0.2s ease;
     }
     .market-table tbody tr:active { transform: scale(0.98); }
-    .market-table tbody tr .text-right { display: none; }
+    .market-table tbody tr .text-right { display: flex; gap: 8px; justify-content: flex-end; }
     .market-table td {
         display: flex;
         justify-content: space-between;
@@ -263,25 +256,4 @@
     }
 }
 
-.detail-overlay {
-    position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9998;
-    opacity:0; transition:opacity 0.3s ease;
-}
-.detail-sheet {
-    position:fixed; bottom:0; left:0; right:0; z-index:9999;
-    background:var(--bg-secondary); border-radius:20px 20px 0 0;
-    padding:24px 20px calc(24px + env(safe-area-inset-bottom));
-    transform:translateY(100%); transition:transform 0.3s ease;
-    max-height:80vh; overflow-y:auto;
-}
-.detail-handle {
-    width:40px; height:4px; background:var(--border); border-radius:2px;
-    margin:0 auto 20px;
-}
-.detail-row {
-    display:flex; justify-content:space-between; align-items:center;
-    padding:14px 0; border-bottom:1px solid var(--border); gap:12px;
-}
-.detail-row:last-of-type { border-bottom:none; }
-.detail-label { font-size:13px; font-weight:600; color:var(--text-muted); flex-shrink:0; }
-.detail-value { font-size:15px; color:var(--text-primary); text-align:right; }
+

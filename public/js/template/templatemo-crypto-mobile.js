@@ -16,109 +16,7 @@
         }, 2500);
     }
 
-    function initMobileRows() {
-        if (window.innerWidth > 768) return;
-        var rows = document.querySelectorAll('.market-table tbody tr');
-        rows.forEach(function(row) {
-            if (row.dataset.mobileReady) return;
-            row.dataset.mobileReady = '1';
 
-            var touchStartY = 0;
-
-            row.addEventListener('touchstart', function(e) {
-                touchStartY = e.touches[0].clientY;
-            }, { passive: true });
-
-            row.addEventListener('touchend', function(e) {
-                var touchEndY = e.changedTouches ? e.changedTouches[0].clientY : touchStartY;
-                var diff = Math.abs(touchStartY - touchEndY);
-                if (diff < 10) {
-                    row.click();
-                }
-            }, { passive: true });
-
-            row.addEventListener('click', function(e) {
-                var target = e.target;
-                if (target.closest('.btn') || target.closest('[data-action]')) {
-                    return;
-                }
-                showDetailSheet(row);
-            });
-        });
-    }
-
-    function showDetailSheet(row) {
-        var existing = document.querySelector('.detail-sheet');
-        if (existing) existing.remove();
-
-        var overlay = document.createElement('div');
-        overlay.className = 'detail-overlay';
-        overlay.addEventListener('click', function() { overlay.remove(); sheet.remove(); document.body.style.overflow = ''; });
-
-        var sheet = document.createElement('div');
-        sheet.className = 'detail-sheet';
-
-        var handle = document.createElement('div');
-        handle.className = 'detail-handle';
-        sheet.appendChild(handle);
-
-        var cells = row.querySelectorAll('td');
-        cells.forEach(function(cell) {
-            var label = cell.getAttribute('data-label') || '';
-            if (label.toLowerCase() === 'aksi' || label.toLowerCase() === 'actions') return;
-            var rowEl = document.createElement('div');
-            rowEl.className = 'detail-row';
-            var l = document.createElement('div');
-            l.className = 'detail-label';
-            l.textContent = label;
-            var v = document.createElement('div');
-            v.className = 'detail-value';
-            v.innerHTML = cell.innerHTML;
-            rowEl.appendChild(l);
-            rowEl.appendChild(v);
-            sheet.appendChild(rowEl);
-        });
-
-        document.body.appendChild(overlay);
-        document.body.appendChild(sheet);
-        document.body.style.overflow = 'hidden';
-
-        requestAnimationFrame(function() {
-            overlay.style.opacity = '1';
-            sheet.style.transform = 'translateY(0)';
-        });
-    }
-
-    function initRevealActions() {
-        var rows = document.querySelectorAll('.market-table tbody tr');
-        rows.forEach(function(row) {
-            var actions = row.querySelector('.text-right');
-            if (!actions) return;
-            var reveal = document.createElement('div');
-            reveal.className = 'mobile-card-reveal';
-            var btns = actions.querySelectorAll('.btn');
-            btns.forEach(function(btn) {
-                var clone = btn.cloneNode(true);
-                clone.style.cssText = 'height:100%;border-radius:0;margin:0;flex:1;';
-                reveal.appendChild(clone);
-            });
-            row.appendChild(reveal);
-        });
-    }
-
-    function initFloatingButton() {
-        if (window.innerWidth > 768) return;
-        var headerBtn = document.querySelector('.card-header .btn.primary');
-        if (!headerBtn) return;
-        var fab = document.createElement('button');
-        fab.className = 'fab-btn';
-        fab.innerHTML = '+';
-        fab.setAttribute('aria-label', 'Add');
-        fab.addEventListener('click', function() {
-            headerBtn.click();
-        });
-        document.body.appendChild(fab);
-    }
 
     function initPullToRefresh() {
         if (window.innerWidth > 768) return;
@@ -192,9 +90,6 @@
         initSwipeSidebar();
         initButtonTouchFeedback();
         initSearchToggle();
-        initRevealActions();
-        // initMobileRows is handled in laravel/pages.js
-        // initFloatingButton is no longer needed
         initSearchFilter();
         window.showToast = showToast;
     }
