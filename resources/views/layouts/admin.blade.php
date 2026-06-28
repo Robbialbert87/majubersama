@@ -21,10 +21,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Maju Bersama">
-    <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-pages.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-pwa.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-style.css') }}?v={{ filemtime(public_path('css/template/templatemo-crypto-style.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-dashboard.css') }}?v={{ filemtime(public_path('css/template/templatemo-crypto-dashboard.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-pages.css') }}?v={{ filemtime(public_path('css/template/templatemo-crypto-pages.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-pwa.css') }}?v={{ filemtime(public_path('css/template/templatemo-crypto-pwa.css')) }}">
     @stack('styles')
 </head>
 <body>
@@ -96,8 +96,8 @@
         </a>
     </nav>
 
-    <script src="{{ asset('js/template/templatemo-crypto-script.js') }}"></script>
-    <script src="{{ asset('js/template/templatemo-crypto-mobile.js') }}"></script>
+    <script src="{{ asset('js/template/templatemo-crypto-script.js') }}?v={{ filemtime(public_path('js/template/templatemo-crypto-script.js')) }}"></script>
+    <script src="{{ asset('js/template/templatemo-crypto-mobile.js') }}?v={{ filemtime(public_path('js/template/templatemo-crypto-mobile.js')) }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var menuBtn = document.getElementById('topBarMenu');

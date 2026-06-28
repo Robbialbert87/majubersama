@@ -18,43 +18,7 @@
 
 
 
-    function initPullToRefresh() {
-        if (window.innerWidth > 768) return;
-        var mainContent = document.querySelector('.main-content');
-        if (!mainContent) return;
-        var touchStartY = 0;
-        var refreshIndicator = document.createElement('div');
-        refreshIndicator.className = 'pull-indicator';
-        refreshIndicator.innerHTML = '&#8595; Pull to refresh';
-        mainContent.parentNode.insertBefore(refreshIndicator, mainContent);
 
-        mainContent.addEventListener('touchstart', function(e) {
-            if (window.scrollY === 0) touchStartY = e.touches[0].clientY;
-        }, { passive: true });
-
-        mainContent.addEventListener('touchmove', function(e) {
-            if (window.scrollY === 0 && touchStartY > 0) {
-                var diff = e.touches[0].clientY - touchStartY;
-                if (diff > 20) {
-                    refreshIndicator.style.opacity = Math.min(1, (diff - 20) / 60);
-                    refreshIndicator.innerHTML = diff > 80 ? '&#8635; Release to refresh' : '&#8595; Pull to refresh';
-                    if (diff > 80) {
-                        touchStartY = 0;
-                        refreshIndicator.innerHTML = '&#8635; Refreshing...';
-                        setTimeout(function() { location.reload(); }, 500);
-                    }
-                }
-            }
-        }, { passive: true });
-
-        mainContent.addEventListener('touchend', function() {
-            refreshIndicator.style.opacity = '0';
-            touchStartY = 0;
-        }, { passive: true });
-    }
-
-    function initSwipeSidebar() {
-    }
 
     function initSearchFilter() {
         var searchInput = document.querySelector('.search-box input');
@@ -69,12 +33,7 @@
         });
     }
 
-    function initButtonTouchFeedback() {
-        document.querySelectorAll('.btn, .nav-item, .stat-card, .market-stat, .market-table tbody tr').forEach(function(el) {
-            el.addEventListener('touchstart', function() { this.style.transform = 'scale(0.97)'; }, { passive: true });
-            el.addEventListener('touchend', function() { this.style.transform = ''; }, { passive: true });
-        });
-    }
+
 
     function initSearchToggle() {
         var searchBox = document.querySelector('.header-search');
@@ -86,9 +45,7 @@
     }
 
     function init() {
-        initPullToRefresh();
-        initSwipeSidebar();
-        initButtonTouchFeedback();
+
         initSearchToggle();
         initSearchFilter();
         window.showToast = showToast;
