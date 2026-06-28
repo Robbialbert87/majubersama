@@ -44,13 +44,13 @@
                 @foreach($prods as $p)
                     @foreach($p->items as $item)
                     <tr>
-                        <td data-label="Kategori">
+                        <td>
                             <span class="size-badge-sm">{{ $item->eggCategory->kode ?? '-' }}</span>
                             <span class="size-name">{{ $item->eggCategory->nama ?? '-' }}</span>
                         </td>
-                        <td data-label="Ikat" class="num">{{ $item->ikat }}</td>
-                        <td data-label="Papan" class="num">{{ $item->papan }}</td>
-                        <td data-label="Sisa" class="num">{{ $item->sisa_butir }}</td>
+                        <td class="num">{{ $item->ikat }}</td>
+                        <td class="num">{{ $item->papan }}</td>
+                        <td class="num">{{ $item->sisa_butir }}</td>
                     </tr>
                     @endforeach
                 @endforeach

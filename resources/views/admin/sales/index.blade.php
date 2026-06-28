@@ -35,11 +35,11 @@
             <tbody>
                 @foreach($sale->details as $d)
                 <tr>
-                    <td data-label="Kategori"><span class="size-badge-sm">{{ $d->eggCategory->kode }}</span> <span class="size-name">{{ $d->eggCategory->nama }}</span></td>
-                    <td data-label="Ikat" class="num">{{ $d->ikat }}</td>
-                    <td data-label="Papan" class="num">{{ $d->papan }}</td>
-                    <td data-label="Harga" class="num harga">Rp {{ number_format($d->harga_per_butir,0,',','.') }}</td>
-                    <td data-label="Subtotal" class="num nilai">Rp {{ number_format($d->subtotal,0,',','.') }}</td>
+                    <td><span class="size-badge-sm">{{ $d->eggCategory->kode }}</span> <span class="size-name">{{ $d->eggCategory->nama }}</span></td>
+                    <td class="num">{{ $d->ikat }}</td>
+                    <td class="num">{{ $d->papan }}</td>
+                    <td class="num harga">Rp {{ number_format($d->harga_per_butir,0,',','.') }}</td>
+                    <td class="num nilai">Rp {{ number_format($d->subtotal,0,',','.') }}</td>
                 </tr>
                 @endforeach
                 <tr class="total-row">
