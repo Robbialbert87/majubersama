@@ -1,4 +1,4 @@
-const CACHE_NAME = 'admin-panel-v1';
+const CACHE_NAME = 'admin-panel-v2';
 const urlsToCache = [
     '/',
     '/dashboard',
@@ -27,32 +27,28 @@ self.addEventListener('activate', function(event) {
                     }
                 })
             );
+        }).then(function() {
+            return self.clients.claim();
         })
     );
 });
 
 self.addEventListener('fetch', function(event) {
     event.respondWith(
-        caches.match(event.request)
-            .then(function(response) {
-                if (response) {
-                    return response;
+        fetch(event.request).then(function(fetchResponse) {
+            var responseToCache = fetchResponse.clone();
+            caches.open(CACHE_NAME).then(function(cache) {
+                cache.put(event.request, responseToCache);
+            });
+            return fetchResponse;
+        }).catch(function() {
+            return caches.match(event.request).then(function(cached) {
+                if (cached) return cached;
+                if (event.request.mode === 'navigate') {
+                    return caches.match('/');
                 }
-                return fetch(event.request).then(function(fetchResponse) {
-                    if (!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
-                        return fetchResponse;
-                    }
-                    const responseToCache = fetchResponse.clone();
-                    caches.open(CACHE_NAME).then(function(cache) {
-                        cache.put(event.request, responseToCache);
-                    });
-                    return fetchResponse;
-                }).catch(function() {
-                    if (event.request.mode === 'navigate') {
-                        return caches.match('/');
-                    }
-                    return new Response('Offline', { status: 503 });
-                });
-            })
+                return new Response('Offline', { status: 503 });
+            });
+        })
     );
 });
