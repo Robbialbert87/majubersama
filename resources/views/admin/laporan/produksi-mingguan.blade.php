@@ -18,18 +18,19 @@
             <span style="background:var(--accent-copper);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">{{ $barn->kode ?? '-' }}</span>
             <span style="font-weight:600;">{{ $barn->nama ?? '' }}</span>
         </div>
-        <table class="market-table"><thead><tr><th>Tanggal</th><th>Ikat</th><th>Papan</th><th>Sisa Butir</th></tr></thead>
+        <div class="desktop-view"><table class="market-table"><thead><tr><th>Tanggal</th><th>Ikat</th><th>Papan</th><th>Sisa Butir</th></tr></thead>
         <tbody>
             @foreach($prods as $p)
             @php $totalIkat = $p->items->sum('ikat'); $totalPapan = $p->items->sum('papan'); $totalSisa = $p->items->sum('sisa_butir'); @endphp
             <tr><td>{{ $p->tanggal->isoFormat('D MMM Y') }}</td><td>{{ $totalIkat }}</td><td>{{ $totalPapan }}</td><td>{{ $totalSisa }}</td></tr>
             @endforeach
-        </tbody></table>
+        </tbody></table></div>
+        <div class="prod-card-grid mobile-view">@foreach($prods as $p)@php $totalIkat = $p->items->sum('ikat'); $totalPapan = $p->items->sum('papan'); $totalSisa = $p->items->sum('sisa_butir'); @endphp<div class="prod-card"><div class="prod-card-stats" style="margin-bottom:6px;"><div class="prod-stat"><span class="prod-stat-label">Tanggal</span><span class="prod-stat-val" style="font-size:12px;">{{ $p->tanggal->isoFormat('D MMM Y') }}</span></div></div><div class="prod-card-stats"><div class="prod-stat"><span class="prod-stat-label">Ikat</span><span class="prod-stat-val">{{ $totalIkat }}</span></div><div class="prod-stat"><span class="prod-stat-label">Papan</span><span class="prod-stat-val">{{ $totalPapan }}</span></div><div class="prod-stat"><span class="prod-stat-label">Sisa</span><span class="prod-stat-val">{{ $totalSisa }}</span></div></div></div>@endforeach</div>
     </div>
     @endforeach
     @else
     <div style="padding:48px 24px;text-align:center;color:var(--text-secondary);">Tidak ada produksi pada periode ini.</div>
     @endif
 </div>
-@push('styles')<style>.market-table th,.market-table td{text-align:center}@media(max-width:768px){.market-table th,.market-table td{text-align:left}}</style>@endpush
+@push('styles')<style>.market-table th,.market-table td{text-align:center}@media(max-width:768px){.market-table th,.market-table td{text-align:left}}@media(min-width:769px){.mobile-view{display:none!important}}@media(max-width:768px){.desktop-view{display:none!important}.prod-card-grid{display:flex;flex-direction:column;gap:6px}.prod-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:10px;padding:10px 12px}.prod-card-stats{display:flex;gap:8px}.prod-stat{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;background:var(--bg-card-hover);border-radius:8px;padding:6px 4px}.prod-stat-label{font-size:10px;color:var(--text-secondary);font-weight:500;text-transform:uppercase;letter-spacing:0.3px}.prod-stat-val{font-size:13px;font-weight:600;color:var(--text-primary)}}</style>@endpush
 @endsection
