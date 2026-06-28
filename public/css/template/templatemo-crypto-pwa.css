@@ -198,33 +198,6 @@
 .bottom-nav-item:active svg {
     transform: scale(0.9);
 }
-.bottom-nav-center {
-    position: relative;
-}
-.bottom-nav-center .bottom-nav-plus {
-    margin-top: -4px;
-}
-.bottom-nav-plus {
-    width: 48px; height: 48px;
-    background: var(--accent-gradient);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 16px rgba(184,115,51,0.4);
-    transition: transform 0.2s ease;
-}
-.bottom-nav-plus svg {
-    width: 24px; height: 24px;
-    color: #1c1c1e;
-}
-.bottom-nav-center.active .bottom-nav-plus {
-    transform: scale(1.1);
-}
-.bottom-nav-center:active .bottom-nav-plus {
-    transform: scale(0.9);
-}
-.bottom-nav-center span {
-    margin-top: 2px;
-}
 .bottom-nav-form {
     display: flex; margin: 0; padding: 0;
 }

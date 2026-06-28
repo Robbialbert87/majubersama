@@ -6,20 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Production extends Model
 {
-    protected $table = 'productions';
-    protected $fillable = [
-        'tanggal', 'kandang_id', 'ayam_besar', 'ayam_kecil',
-        'total_produksi', 'telur_putih', 'telur_pecah', 'catatan', 'created_by'
-    ];
+    protected $fillable = ['tanggal', 'barn_id', 'catatan', 'created_by'];
 
     protected function casts(): array
     {
         return ['tanggal' => 'date'];
     }
 
-    public function kandang()
+    public function barn()
     {
-        return $this->belongsTo(Kandang::class, 'kandang_id');
+        return $this->belongsTo(Barn::class, 'barn_id');
     }
 
     public function creator()
@@ -27,8 +23,8 @@ class Production extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function details()
+    public function items()
     {
-        return $this->hasMany(ProductionDetail::class, 'production_id');
+        return $this->hasMany(ProductionItem::class, 'production_id');
     }
 }

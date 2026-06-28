@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Production;
-use App\Models\ProductionDetail;
+use App\Models\ProductionItem;
 use App\Models\DailyPrice;
-use App\Models\Kandang;
-use App\Models\EggSize;
+use App\Models\Barn;
+use App\Models\EggCategory;
 use App\Models\Stock;
+use App\Models\Sale;
+use App\Models\SaleDetail;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,73 +19,69 @@ class LaporanController extends Controller
     public function produksiHarian(Request $request)
     {
         $tanggal = $request->tanggal ?? now()->format('Y-m-d');
-        $productions = Production::with(['kandang', 'details.eggSize'])->where('tanggal', $tanggal)->orderBy('kandang_id')->get();
-        $groups = $productions->groupBy(fn($p) => $p->kandang->nama ?? $p->kandang->kode ?? 'Lainnya');
-        return view('admin.laporan.produksi-harian', compact('groups', 'tanggal'));
+        $productions = Production::with(['barn', 'items.eggCategory'])
+            ->where('tanggal', $tanggal)
+            ->orderBy('barn_id')
+            ->get();
+        $totalItems = ProductionItem::whereHas('production', fn($q) => $q->where('tanggal', $tanggal))->get();
+        $grandTotal = [
+            'ikat' => $totalItems->sum('ikat'),
+            'papan' => $totalItems->sum('papan'),
+            'sisa_butir' => $totalItems->sum('sisa_butir'),
+        ];
+
+        return view('admin.laporan.produksi-harian', compact('productions', 'tanggal', 'grandTotal'));
     }
 
     public function produksiMingguan(Request $request)
     {
         $start = $request->start ?? now()->startOfWeek()->format('Y-m-d');
         $end = $request->end ?? now()->format('Y-m-d');
-        $productions = Production::with(['kandang', 'details.eggSize'])->whereBetween('tanggal', [$start, $end])->orderBy('kandang_id')->orderBy('tanggal', 'desc')->get();
-        $groups = $productions->groupBy(fn($p) => $p->kandang->nama ?? $p->kandang->kode ?? 'Lainnya');
-        return view('admin.laporan.produksi-mingguan', compact('groups', 'start', 'end'));
+        $productions = Production::with(['barn', 'items.eggCategory'])
+            ->whereBetween('tanggal', [$start, $end])
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('barn_id')
+            ->get();
+
+        return view('admin.laporan.produksi-mingguan', compact('productions', 'start', 'end'));
     }
 
     public function produksiBulanan(Request $request)
     {
         $bulan = $request->bulan ?? now()->format('Y-m');
         [$year, $month] = explode('-', $bulan);
-        $productions = Production::with(['kandang', 'details.eggSize'])->whereYear('tanggal', $year)->whereMonth('tanggal', $month)->orderBy('kandang_id')->orderBy('tanggal', 'desc')->get();
-        $groups = $productions->groupBy(fn($p) => $p->kandang->nama ?? $p->kandang->kode ?? 'Lainnya');
-        return view('admin.laporan.produksi-bulanan', compact('groups', 'bulan', 'year', 'month'));
+        $productions = Production::with(['barn', 'items.eggCategory'])
+            ->whereYear('tanggal', $year)
+            ->whereMonth('tanggal', $month)
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('barn_id')
+            ->get();
+
+        return view('admin.laporan.produksi-bulanan', compact('productions', 'bulan', 'year', 'month'));
     }
 
-    public function produksiPerKandang(Request $request)
-    {
-        $kandangId = $request->kandang_id;
-        $kandangs = Kandang::orderBy('kode')->get();
-        $productions = collect();
-        if ($kandangId) {
-            $productions = Production::with(['kandang', 'details.eggSize'])->where('kandang_id', $kandangId)->orderBy('tanggal', 'desc')->get();
-        }
-        return view('admin.laporan.produksi-per-kandang', compact('productions', 'kandangs', 'kandangId'));
-    }
-
-    public function hargaHarian(Request $request)
+    public function penjualan(Request $request)
     {
         $tanggal = $request->tanggal ?? now()->format('Y-m-d');
-        $prices = DailyPrice::with('eggSize')->where('tanggal', $tanggal)->orderBy('egg_size_id')->get();
-        return view('admin.laporan.harga-harian', compact('prices', 'tanggal'));
+        $sales = Sale::with(['creator', 'details.eggCategory'])
+            ->where('tanggal', $tanggal)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $totalPenjualan = $sales->sum(function ($s) {
+            return $s->details->sum('subtotal');
+        });
+
+        return view('admin.laporan.penjualan', compact('sales', 'tanggal', 'totalPenjualan'));
     }
 
     public function stockGudang()
     {
-        $stocks = Stock::with('eggSize')->get();
-        return view('admin.laporan.stock-gudang', compact('stocks'));
-    }
+        $categories = EggCategory::orderBy('urutan')->get();
+        $stocks = Stock::with('eggCategory')->get()->keyBy('egg_category_id');
+        $settings = SystemSetting::first();
+        $butirPerPapan = $settings->butir_per_papan ?? 30;
 
-    public function keuanganHarian(Request $request)
-    {
-        $tanggal = $request->tanggal ?? now()->format('Y-m-d');
-        $details = ProductionDetail::with(['production.kandang', 'eggSize'])
-            ->whereHas('production', fn($q) => $q->where('tanggal', $tanggal))
-            ->orderBy('production_id')->get();
-        $groups = $details->groupBy(fn($d) => $d->production->production->kandang->nama ?? $d->production->kandang->kode ?? 'Lainnya');
-        $total = $details->sum('subtotal');
-        return view('admin.laporan.keuangan-harian', compact('groups', 'tanggal', 'total'));
-    }
-
-    public function keuanganBulanan(Request $request)
-    {
-        $bulan = $request->bulan ?? now()->format('Y-m');
-        [$year, $month] = explode('-', $bulan);
-        $details = ProductionDetail::with(['production.kandang', 'eggSize'])
-            ->whereHas('production', fn($q) => $q->whereYear('tanggal', $year)->whereMonth('tanggal', $month))
-            ->orderBy('production_id')->get()
-            ->groupBy(fn($d) => $d->production->tanggal->format('Y-m-d'));
-        $total = $details->flatten()->sum('subtotal');
-        return view('admin.laporan.keuangan-bulanan', compact('details', 'bulan', 'year', 'month', 'total'));
+        return view('admin.laporan.stock-gudang', compact('categories', 'stocks', 'butirPerPapan'));
     }
 }

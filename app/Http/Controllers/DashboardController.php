@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Production;
-use App\Models\ProductionDetail;
-use App\Models\Stock;
-use App\Models\Kandang;
-use App\Models\EggSize;
+use App\Models\Barn;
 use App\Models\DailyPrice;
-use Illuminate\Http\Request;
+use App\Models\EggCategory;
+use App\Models\Production;
+use App\Models\ProductionItem;
+use App\Models\Stock;
+use App\Models\SystemSetting;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -16,67 +17,57 @@ class DashboardController extends Controller
     {
         $today = now()->format('Y-m-d');
 
-        // Ringkasan produksi hari ini
-        $produksiHariIni = Production::where('tanggal', $today)->count();
+        $settings = SystemSetting::first();
+        $butirPerPapan = $settings->butir_per_papan ?? 30;
+        $papanPerIkat = $settings->papan_per_ikat ?? 5;
 
-        // Total telur sortir hari ini (dari production_details)
-        $sortirHariIni = ProductionDetail::whereHas('production', fn($q) => $q->where('tanggal', $today))
-            ->sum('jumlah_butir');
+        // Production today
+        $todayItems = ProductionItem::whereHas('production', fn($q) => $q->where('tanggal', $today))->get();
+        $produksiHariIni = $todayItems->sum(fn($i) => ($i->ikat * $papanPerIkat * $butirPerPapan) + ($i->papan * $butirPerPapan) + $i->sisa_butir);
 
-        // Total pendapatan hari ini
-        $pendapatanHariIni = ProductionDetail::whereHas('production', fn($q) => $q->where('tanggal', $today))
-            ->sum('subtotal');
+        // Total stock in butir
+        $totalStok = 0;
+        $stocks = Stock::with('eggCategory')->get();
 
-        // Total stok gudang (semua ukuran)
-        $totalStok = Stock::sum('jumlah_butir');
+        foreach ($stocks as $s) {
+            $totalStok += ($s->ikat * $papanPerIkat * $butirPerPapan) + ($s->papan * $butirPerPapan) + $s->sisa_butir;
+        }
 
-        // Jumlah kandang aktif
-        $totalKandang = Kandang::where('status', 'Active')->count();
+        // Active barns count
+        $totalKandang = Barn::where('status', 'Active')->count();
+        $totalUkuran = EggCategory::where('status', 'Active')->count();
 
-        // Jumlah ukuran telur aktif
-        $totalUkuran = EggSize::where('status', 'Active')->count();
-
-        // Stok per ukuran
-        $stocks = Stock::with('eggSize')->get();
-
-        // Produksi 7 hari terakhir (untuk chart)
+        // Last 7 days production
         $last7days = collect();
         for ($i = 6; $i >= 0; $i--) {
-            $tgl = now()->subDays($i)->format('Y-m-d');
-            $butir = ProductionDetail::whereHas('production', fn($q) => $q->where('tanggal', $tgl))
-                ->sum('jumlah_butir');
+            $date = now()->subDays($i)->format('Y-m-d');
+            $butir = ProductionItem::whereHas('production', fn($q) => $q->where('tanggal', $date))
+                ->sum(DB::raw('(ikat * ' . $papanPerIkat . ' * ' . $butirPerPapan . ') + (papan * ' . $butirPerPapan . ') + sisa_butir'));
             $last7days->push([
-                'tanggal' => now()->subDays($i)->format('d M'),
-                'butir'   => (int) $butir,
+                'tanggal' => now()->subDays($i)->isoFormat('dd'),
+                'date' => $date,
+                'butir' => $butir,
             ]);
         }
 
-        // Harga terbaru per ukuran
-        $hargaTerkini = DailyPrice::with('eggSize')
-            ->whereIn('id', function ($q) {
-                $q->selectRaw('MAX(id)')->from('daily_prices')->groupBy('egg_size_id');
-            })
-            ->orderBy('egg_size_id')
+        // Current prices
+        $activePrice = DailyPrice::where('tanggal_berlaku', '<=', $today)
+            ->orderBy('tanggal_berlaku', 'desc')
+            ->first();
+
+        // Recent productions
+        $produksiTerbaru = Production::with(['barn', 'items.eggCategory'])
+            ->orderBy('tanggal', 'desc')
+            ->take(5)
             ->get();
 
-        // Produksi terbaru (5 data)
-        $produksiTerbaru = Production::with(['kandang', 'details.eggSize'])
-            ->orderBy('tanggal', 'desc')
-            ->limit(5)
-            ->get();
+        // Stock per category
+        $categoryStocks = Stock::with('eggCategory')->get();
 
         return view('admin.dashboard', compact(
-            'produksiHariIni',
-            'sortirHariIni',
-            'pendapatanHariIni',
-            'totalStok',
-            'totalKandang',
-            'totalUkuran',
-            'stocks',
-            'last7days',
-            'hargaTerkini',
-            'produksiTerbaru',
-            'today'
+            'today', 'produksiHariIni', 'totalStok', 'totalKandang', 'totalUkuran',
+            'last7days', 'activePrice', 'produksiTerbaru', 'categoryStocks',
+            'butirPerPapan', 'papanPerIkat'
         ));
     }
 }

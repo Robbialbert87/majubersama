@@ -20,25 +20,25 @@
 
     <nav class="nav-section">
         <div class="nav-label">Master Data</div>
-        <a href="{{ route('kandang.index') }}" class="nav-item {{ request()->routeIs('kandang.*') ? 'active' : '' }}">
+        <a href="{{ route('barns.index') }}" class="nav-item {{ request()->routeIs('barns.*') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
                 <polyline points="9 22 9 12 15 12 15 22"/>
             </svg>
             Kandang
         </a>
-        <a href="{{ route('egg-sizes.index') }}" class="nav-item {{ request()->routeIs('egg-sizes.*') ? 'active' : '' }}">
+        <a href="{{ route('egg-categories.index') }}" class="nav-item {{ request()->routeIs('egg-categories.*') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 2a8 8 0 00-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 00-8-8z"/>
                 <circle cx="12" cy="10" r="3"/>
             </svg>
-            Ukuran Telur
+            Kategori Telur
         </a>
         <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') || request()->routeIs('roles') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
-            Pengaturan Sistem
+            Pengaturan
         </a>
     </nav>
 
@@ -49,21 +49,15 @@
                 <line x1="12" y1="1" x2="12" y2="23"/>
                 <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
             </svg>
-            Harga Harian
+            Harga Berlaku
         </a>
         <a href="{{ route('productions.index') }}" class="nav-item {{ request()->routeIs('productions.*') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
-            Produksi Harian
+            Input Produksi
         </a>
-        <a href="{{ route('production-details.index') }}" class="nav-item {{ request()->routeIs('production-details.*') ? 'active' : '' }}">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="20" height="14" rx="2"/>
-            </svg>
-            Hasil Sortir
-        </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('sales.index') }}" class="nav-item {{ request()->routeIs('sales.*') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"></circle>
                 <circle cx="20" cy="21" r="1"></circle>
@@ -74,7 +68,7 @@
     </nav>
 
     <nav class="nav-section">
-        <div class="nav-label">Persediaan</div>
+        <div class="nav-label">Gudang</div>
         <a href="{{ route('stock.index') }}" class="nav-item {{ request()->routeIs('stock.*') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="3" width="20" height="14" rx="2"/>
@@ -112,18 +106,13 @@
             </svg>
             Produksi Bulanan
         </a>
-        <a href="{{ route('laporan.produksi-per-kandang') }}" class="nav-item {{ request()->routeIs('laporan.produksi-per-kandang') ? 'active' : '' }}">
+        <a href="{{ route('laporan.penjualan') }}" class="nav-item {{ request()->routeIs('laporan.penjualan') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
             </svg>
-            Produksi per Kandang
-        </a>
-        <a href="{{ route('laporan.harga-harian') }}" class="nav-item {{ request()->routeIs('laporan.harga-harian') ? 'active' : '' }}">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="1" x2="12" y2="23"/>
-                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-            </svg>
-            Harga Harian
+            Penjualan
         </a>
         <a href="{{ route('laporan.stock-gudang') }}" class="nav-item {{ request()->routeIs('laporan.stock-gudang') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -132,14 +121,6 @@
                 <path d="M12 17v4"/>
             </svg>
             Stok Gudang
-        </a>
-        <a href="#" class="nav-item">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-            Penjualan
         </a>
     </nav>
 

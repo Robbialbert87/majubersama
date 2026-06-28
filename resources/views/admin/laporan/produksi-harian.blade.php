@@ -1,27 +1,33 @@
 @extends('layouts.admin')
 @section('title', 'Laporan Produksi Harian')
-@section('subtitle', 'Rekapitulasi produksi harian.')
+@section('subtitle', 'Rekap produksi telur per hari.')
 @section('content')
-<div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:24px;">
-    <div></div>
-    <form method="GET" style="display:flex;gap:8px;align-items:center;"><div class="form-input-wrapper" style="margin:0;"><input type="date" name="tanggal" class="form-input" value="{{ $tanggal }}" onchange="this.form.submit()" style="padding:8px 12px;font-size:13px;"></div></form>
+<form method="GET" style="display:flex;gap:12px;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;">
+    <div class="form-group" style="margin:0;"><label class="form-label">Tanggal</label><div class="form-input-wrapper"><input type="date" name="tanggal" class="form-input" value="{{ $tanggal }}" onchange="this.form.submit()"></div></div>
+</form>
+<div class="card">
+    <div class="card-header"><h2 class="card-title">Produksi {{ \Carbon\Carbon::parse($tanggal)->isoFormat('D MMMM Y') }}</h2></div>
+    @if($productions->count() > 0)
+    @foreach($productions as $p)
+    <div style="padding:16px 24px;border-bottom:1px solid var(--border-color);">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:var(--accent-copper);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">{{ $p->barn->kode ?? '-' }}</span>
+            <span style="font-weight:600;">{{ $p->barn->nama ?? '' }}</span>
+        </div>
+        <table class="market-table"><thead><tr><th>Kategori</th><th>Ikat</th><th>Papan</th><th>Sisa Butir</th></tr></thead>
+        <tbody>
+            @foreach($p->items as $item)
+            <tr><td>{{ $item->eggCategory->kode }} - {{ $item->eggCategory->nama }}</td><td>{{ $item->ikat }}</td><td>{{ $item->papan }}</td><td>{{ $item->sisa_butir }}</td></tr>
+            @endforeach
+        </tbody></table>
+    </div>
+    @endforeach
+    <div style="padding:16px 24px;background:var(--bg-card-hover);">
+        <div style="font-weight:700;">Grand Total: {{ $grandTotal['ikat'] }} ikat, {{ $grandTotal['papan'] }} papan, {{ $grandTotal['sisa_butir'] }} sisa butir</div>
+    </div>
+    @else
+    <div style="padding:48px 24px;text-align:center;color:var(--text-secondary);">Tidak ada produksi pada tanggal ini.</div>
+    @endif
 </div>
-@if($groups->count() > 0)
-@foreach($groups as $namaKandang => $items)
-<div class="card" style="margin-bottom:20px;">
-    <div class="card-header"><h2 class="card-title">{{ $namaKandang }}</h2></div>
-    <table class="market-table"><thead><tr><th style="text-align:center;">Kandang</th><th style="text-align:center;">Besar</th><th style="text-align:center;">Kecil</th><th style="text-align:center;">Total</th><th style="text-align:center;">Putih</th><th style="text-align:center;">Pecah</th></tr></thead>
-    <tbody>@foreach($items as $p)<tr><td data-label="Kandang"><div class="coin-cell"><span style="background:var(--accent-copper);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;letter-spacing:0.3px;">{{ $p->kandang->kode ?? '-' }}</span><div><div class="coin-name" style="font-size:14px;">{{ $p->kandang->nama ?? '-' }}</div></div></div></td><td data-label="Besar" class="price-cell">{{ number_format($p->ayam_besar,0,',','.') }}</td><td data-label="Kecil" class="price-cell">{{ number_format($p->ayam_kecil,0,',','.') }}</td><td data-label="Total" class="price-cell" style="font-weight:600;">{{ number_format($p->total_produksi,0,',','.') }}</td><td data-label="Putih" class="price-cell">{{ $p->telur_putih }}</td><td data-label="Pecah" class="price-cell" style="color:var(--loss);">{{ $p->telur_pecah }}</td></tr>@endforeach</tbody></table>
-    <div style="padding:12px 24px;border-top:1px solid var(--border-color);display:flex;justify-content:space-between;"><span style="color:var(--text-secondary);">Subtotal {{ $namaKandang }}</span><span style="font-weight:600;">{{ number_format($items->sum('total_produksi'),0,',','.') }} butir</span></div>
-</div>
-@endforeach
-@else
-<div class="card"><div class="card-body" style="padding:48px;text-align:center;color:var(--text-secondary);">Tidak ada data produksi pada tanggal ini.</div></div>
-@endif
-@if($groups->count() > 0)
-<div class="card" style="border:2px solid var(--accent-copper);">
-    <div style="padding:16px 24px;display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:600;font-size:16px;">Total Keseluruhan</span><span style="font-weight:700;font-size:18px;color:var(--gain);">{{ number_format($groups->flatten()->sum('total_produksi'),0,',','.') }} butir</span></div>
-</div>
-@endif
-@push('styles')<style>.form-input-wrapper{background:var(--bg-card);border:1px solid var(--border-color);border-radius:10px;display:inline-flex}.form-input-wrapper .form-input{background:none;border:none;color:var(--text-primary);outline:none;width:auto}@media(min-width:769px){.market-table td{text-align:center}}</style>@endpush
+@push('styles')<style>.market-table th,.market-table td{text-align:center}@media(max-width:768px){.market-table th,.market-table td{text-align:left}}</style>@endpush
 @endsection

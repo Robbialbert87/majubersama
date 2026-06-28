@@ -29,4 +29,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function dailyPrices()
+    {
+        return $this->hasMany(DailyPrice::class, 'created_by');
+    }
+
+    public function productions()
+    {
+        return $this->hasMany(Production::class, 'created_by');
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class, 'created_by');
+    }
 }

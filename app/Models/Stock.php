@@ -8,10 +8,10 @@ class Stock extends Model
 {
     protected $table = 'stocks';
     public $timestamps = false;
-    protected $fillable = ['egg_size_id', 'jumlah_butir', 'updated_at'];
+    protected $fillable = ['egg_category_id', 'ikat', 'papan', 'sisa_butir', 'updated_at'];
 
-    public function eggSize()
+    public function eggCategory()
     {
-        return $this->belongsTo(EggSize::class, 'egg_size_id');
+        return $this->belongsTo(EggCategory::class, 'egg_category_id');
     }
 }

@@ -1,26 +1,79 @@
 @extends('layouts.admin')
-@section('title', 'Produksi Harian')
+@section('title', 'Input Produksi')
 @section('subtitle', 'Riwayat produksi telur harian per kandang.')
 @section('content')
 @if(session('success'))<div style="background:rgba(38,161,123,0.2);color:var(--gain);padding:12px 16px;border-radius:10px;margin-bottom:24px;font-size:14px;">{{ session('success') }}</div>@endif
 @if(session('error'))<div style="background:rgba(194,120,120,0.2);color:var(--loss);padding:12px 16px;border-radius:10px;margin-bottom:24px;font-size:14px;">{{ session('error') }}</div>@endif
-<div class="card">
-    <div class="card-header"><h2 class="card-title">Riwayat Produksi Harian</h2></div>
-    <div class="search-filters"><div class="search-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="searchInput" placeholder="Cari produksi..." oninput="filterTable()"></div></div>
-    <table class="market-table"><thead><tr><th style="text-align:center;">Tanggal</th><th style="text-align:center;">Kandang</th><th style="text-align:center;">Jumbo</th><th style="text-align:center;">Besar</th><th style="text-align:center;">Sedang</th><th style="text-align:center;">Tanggung</th><th style="text-align:center;">Putih</th><th style="text-align:center;">Pecah</th><th style="text-align:center;">Sisa</th><th style="text-align:center;">Total</th></tr></thead>
-    <tbody>@forelse($productions as $p)
-        @php
-            $j = $p->details->where('eggSize.kode', 'J')->sum('jumlah_butir');
-            $b = $p->details->where('eggSize.kode', 'B')->sum('jumlah_butir');
-            $s = $p->details->where('eggSize.kode', 'S')->sum('jumlah_butir');
-            $t = $p->details->where('eggSize.kode', 'T')->sum('jumlah_butir');
-            $putih = $p->details->where('eggSize.kode', 'P')->sum('jumlah_butir');
-            $pecah = $p->details->where('eggSize.kode', 'PC')->sum('jumlah_butir');
-            $sisa = $p->details->sum('sisa_butir');
-            $total = $p->details->sum('jumlah_butir');
-        @endphp
-        <tr><td data-label="Tanggal"><div class="coin-cell"><div class="coin-icon btc" style="font-size:12px;">{{ $p->tanggal->format('d') }}</div><div><div class="coin-name">{{ $p->tanggal->format('d M Y') }}</div></div></div></td><td data-label="Kandang"><div class="coin-cell"><span style="background:var(--accent-copper);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;letter-spacing:0.3px;">{{ $p->kandang->kode ?? '-' }}</span><div><div class="coin-name" style="font-size:14px;">{{ $p->kandang->nama ?? '' }}</div></div></div></td><td data-label="Jumbo" class="price-cell">{{ number_format($j,0,',','.') }}</td><td data-label="Besar" class="price-cell">{{ number_format($b,0,',','.') }}</td><td data-label="Sedang" class="price-cell">{{ number_format($s,0,',','.') }}</td><td data-label="Tanggung" class="price-cell">{{ number_format($t,0,',','.') }}</td><td data-label="Putih" class="price-cell" style="color:var(--text-secondary);">{{ number_format($putih,0,',','.') }}</td><td data-label="Pecah" class="price-cell" style="color:var(--loss);">{{ number_format($pecah,0,',','.') }}</td><td data-label="Sisa" class="price-cell" style="color:var(--text-secondary);">{{ number_format($sisa,0,',','.') }}</td><td data-label="Total" class="price-cell" style="font-weight:600;color:var(--gain);">{{ number_format($total,0,',','.') }}</td></tr>@empty<tr><td colspan="10" style="text-align:center;color:var(--text-secondary);padding:32px;">Belum ada data produksi.</td></tr>@endforelse</tbody></table>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+    <h2 class="card-title" style="margin:0;">Riwayat Produksi</h2>
+    <a href="{{ route('productions.create') }}" class="btn primary">+ Input Produksi</a>
 </div>
-@push('styles')<style>@media(min-width:769px){.market-table td{text-align:center}}@media(max-width:768px){.market-table .coin-icon.btc,.market-table td[data-label="Kandang"] .coin-cell>span:first-child{display:none!important}.market-table tbody tr{cursor:default}}</style>@endpush
-@push('scripts')<script>function filterTable(){var q=document.getElementById('searchInput').value.toLowerCase();document.querySelectorAll('.market-table tbody tr').forEach(function(r){r.style.display=!q||r.textContent.toLowerCase().includes(q)?'':'none'})}</script>@endpush
+@if($productions->count() > 0)
+@php $grouped = $productions->groupBy(fn($p) => $p->barn_id); @endphp
+@foreach($grouped as $barnId => $prods)
+@php $barn = $prods->first()->barn; @endphp
+<div class="card" style="margin-bottom:24px;">
+    <div class="card-header card-header-flex">
+        <div class="card-header-left">
+            <span class="kandang-label">{{ $barn->kode ?? '?' }}</span>
+            <h2 class="card-title" style="margin:0;">{{ $barn->nama ?? 'Tanpa Kandang' }}</h2>
+        </div>
+        <div class="card-header-right">
+            @foreach($prods as $p)
+            <div class="header-prod">
+                <span class="header-prod-date">{{ $p->tanggal->format('d M Y') }}</span>
+                <button class="btn-aksi hapus" title="Hapus" onclick="openDelete({{ $p->id }},'{{ $barn->kode ?? '' }} {{ $p->tanggal->format('d M Y') }}')">&#10005;</button>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @php $grand = ['ikat'=>0,'papan'=>0,'sisa_butir'=>0]; @endphp
+    @foreach($prods as $p)
+        @foreach($p->items as $item)
+            @php
+                $grand['ikat'] += $item->ikat;
+                $grand['papan'] += $item->papan;
+                $grand['sisa_butir'] += $item->sisa_butir;
+            @endphp
+        @endforeach
+    @endforeach
+    <div style="overflow-x:auto;">
+        <table class="market-table sortir-table">
+            <thead><tr><th>Kategori</th><th class="num">Ikat</th><th class="num">Papan</th><th class="num">Sisa Butir</th></tr></thead>
+            <tbody>
+                @foreach($prods as $p)
+                    @foreach($p->items as $item)
+                    <tr>
+                        <td data-label="Kategori">
+                            <span class="size-badge-sm">{{ $item->eggCategory->kode ?? '-' }}</span>
+                            <span class="size-name">{{ $item->eggCategory->nama ?? '-' }}</span>
+                        </td>
+                        <td data-label="Ikat" class="num">{{ $item->ikat }}</td>
+                        <td data-label="Papan" class="num">{{ $item->papan }}</td>
+                        <td data-label="Sisa" class="num">{{ $item->sisa_butir }}</td>
+                    </tr>
+                    @endforeach
+                @endforeach
+                <tr class="total-row">
+                    <td class="total-label">TOTAL {{ $barn->kode ?? '' }}</td>
+                    <td class="num total-val">{{ $grand['ikat'] }}</td>
+                    <td class="num total-val">{{ $grand['papan'] }}</td>
+                    <td class="num total-val">{{ $grand['sisa_butir'] }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+@endforeach
+@else
+<div class="card"><div style="text-align:center;color:var(--text-secondary);padding:48px 32px;"><div style="font-size:48px;margin-bottom:16px;opacity:0.4;">&#129371;</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;">Belum Ada Data Produksi</div><div style="font-size:13px;">Klik "+ Input Produksi" untuk menambahkan produksi pertama.</div></div></div>
+@endif
+<div class="modal-overlay" id="modalHapus" onclick="if(event.target===this)closeModal('modalHapus')">
+    <div class="modal" style="max-width:400px;"><div class="modal-header"><h2>Hapus Produksi</h2><button class="modal-close" onclick="closeModal('modalHapus')">&times;</button></div>
+    <div class="modal-body"><p style="color:var(--text-secondary);margin:0;">Yakin ingin menghapus produksi <strong id="deleteInfo"></strong>? Stok akan disesuaikan.</p></div>
+    <div class="modal-footer"><button type="button" class="btn" onclick="closeModal('modalHapus')">Batal</button><form method="POST" id="deleteForm" style="display:inline;">@csrf @method('DELETE')<button type="submit" class="btn danger">Ya, Hapus</button></form></div></div>
+</div>
+@push('styles')
+<style>.card-header-flex{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}.card-header-left{display:flex;align-items:center;gap:12px}.card-header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.kandang-label{display:inline-flex;align-items:center;justify-content:center;padding:4px 14px;border-radius:20px;background:var(--accent-copper);color:#fff;font-weight:700;font-size:12px;letter-spacing:0.5px;flex-shrink:0}.header-prod{display:flex;align-items:center;gap:6px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:10px;padding:4px 10px 4px 14px}.header-prod-date{font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap}.size-badge-sm{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:var(--accent-copper);color:#fff;font-weight:700;font-size:11px;flex-shrink:0}.size-name{font-size:13px;color:var(--text-primary);margin-left:8px}.sortir-table th{font-size:11px;padding:14px 12px;white-space:nowrap}.sortir-table th.num,.sortir-table td.num{text-align:right;font-variant-numeric:tabular-nums}.sortir-table td{padding:12px;vertical-align:middle;font-size:13px}.btn-aksi{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:none;border-radius:8px;font-size:14px;cursor:pointer;transition:all 0.2s ease;text-decoration:none}.btn-aksi.hapus{background:rgba(239,68,68,0.15);color:#ef4444}.btn-aksi.hapus:hover{background:rgba(239,68,68,0.3);transform:scale(1.1)}.total-row{background:var(--bg-card-hover)!important}.total-row td{padding:14px 12px!important;border-top:2px solid var(--border-color)}.total-label{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary)}.total-val{font-weight:700;font-size:14px;color:var(--text-primary)}@media(max-width:768px){.sortir-table thead{display:none}.sortir-table tbody tr{display:block;background:var(--bg-card);border:1px solid var(--border-color);border-radius:14px;padding:14px 16px;margin-bottom:12px}.sortir-table td{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border:none;gap:12px;text-align:right}.sortir-table td::before{content:attr(data-label);font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0;text-align:left}.sortir-table td.num{text-align:right}.size-badge-sm{display:none}.total-row td::before{display:none}}.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}.modal-overlay.active{display:flex}.modal{background:var(--bg-card);border-radius:16px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;border:1px solid var(--border-color)}.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border-color)}.modal-header h2{font-size:18px;font-weight:600;margin:0}.modal-close{background:none;border:none;color:var(--text-secondary);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1}.modal-close:hover{color:var(--text-primary)}.modal-body{padding:24px}.modal-footer{display:flex;gap:12px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--border-color)}@media(max-width:540px){.modal{max-width:100%;border-radius:12px}}</style>@endpush
+@push('scripts')<script>function closeModal(id){document.getElementById(id).classList.remove('active')}function openDelete(id,info){document.getElementById('deleteForm').action='/productions/'+id;document.getElementById('deleteInfo').textContent=info;document.getElementById('modalHapus').classList.add('active')}</script>@endpush
 @endsection

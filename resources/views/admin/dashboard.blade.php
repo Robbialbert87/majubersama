@@ -2,7 +2,6 @@
 @section('title', 'Dashboard')
 @section('subtitle', 'Selamat datang kembali, ' . auth()->user()->name . '!')
 @section('content')
-
 @push('styles')
 <style>
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:28px}
@@ -18,21 +17,17 @@
 .stat-value{font-size:26px;font-weight:700;color:var(--text-primary);line-height:1}
 .stat-label{font-size:13px;color:var(--text-secondary)}
 .stat-sub{font-size:12px;color:var(--text-secondary);margin-top:2px}
-
 .dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:28px}
 @media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
-
 .chart-bars{display:flex;align-items:flex-end;gap:8px;height:120px;padding:8px 0}
 .chart-bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px}
 .chart-bar{width:100%;background:var(--accent-gold);border-radius:4px 4px 0 0;transition:height .4s;min-height:4px}
 .chart-label{font-size:10px;color:var(--text-secondary);white-space:nowrap}
-
 .stock-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-color)}
 .stock-row:last-child{border-bottom:none}
 .stock-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:var(--accent-copper);color:#fff}
 .stock-butir{font-weight:700;color:var(--gain)}
 .stock-papan{font-size:12px;color:var(--text-secondary)}
-
 .recent-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-color)}
 .recent-item:last-child{border-bottom:none}
 .recent-date{width:36px;height:36px;background:var(--accent-gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#000;flex-shrink:0}
@@ -42,50 +37,33 @@
 .recent-val{font-size:13px;font-weight:700;color:var(--gain)}
 </style>
 @endpush
-
-{{-- Stats Cards --}}
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-icon blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <div class="stat-value">{{ $produksiHariIni }}</div>
-        <div class="stat-label">Produksi Hari Ini</div>
+        <div class="stat-value">{{ number_format($produksiHariIni, 0, ',', '.') }}</div>
+        <div class="stat-label">Produksi Hari Ini (butir)</div>
         <div class="stat-sub">{{ \Carbon\Carbon::parse($today)->isoFormat('dddd, D MMMM Y') }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 00-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 00-8-8z"/><circle cx="12" cy="10" r="3"/></svg></div>
-        <div class="stat-value">{{ number_format($sortirHariIni, 0, ',', '.') }}</div>
-        <div class="stat-label">Butir Sortir Hari Ini</div>
-        <div class="stat-sub">{{ number_format(intdiv($sortirHariIni, 30), 0, ',', '.') }} papan, {{ $sortirHariIni % 30 }} butir sisa</div>
-    </div>
-    <div class="stat-card">
         <div class="stat-icon amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-        <div class="stat-value">{{ 'Rp ' . number_format($pendapatanHariIni, 0, ',', '.') }}</div>
-        <div class="stat-label">Pendapatan Hari Ini</div>
-        <div class="stat-sub">Dari hasil sortir</div>
+        <div class="stat-value">{{ $activePrice ? 'Rp ' . number_format($activePrice->jumbo, 0, ',', '.') : 'Rp 0' }}</div>
+        <div class="stat-label">Harga Jumbo Terkini</div>
+        <div class="stat-sub">Per butir {{ $activePrice ? '— ' . $activePrice->tanggal_berlaku->isoFormat('D MMM Y') : '' }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon rose"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div>
         <div class="stat-value">{{ number_format($totalStok, 0, ',', '.') }}</div>
-        <div class="stat-label">Total Stok Gudang</div>
-        <div class="stat-sub">{{ number_format(intdiv($totalStok, 150), 0, ',', '.') }} ikat total</div>
+        <div class="stat-label">Total Stok Gudang (butir)</div>
+        <div class="stat-sub">{{ $totalStok > 0 ? number_format(intdiv($totalStok, $butirPerPapan * $papanPerIkat), 0, ',', '.') . ' ikat setara' : '' }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon purple"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
         <div class="stat-value">{{ $totalKandang }}</div>
         <div class="stat-label">Kandang Aktif</div>
-        <div class="stat-sub">Terdaftar dalam sistem</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon copper"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 00-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 00-8-8z"/></svg></div>
-        <div class="stat-value">{{ $totalUkuran }}</div>
-        <div class="stat-label">Ukuran Telur</div>
-        <div class="stat-sub">Kategori ukuran aktif</div>
+        <div class="stat-sub">{{ $totalUkuran }} kategori telur</div>
     </div>
 </div>
-
-{{-- Chart & Stock Side by side --}}
 <div class="dash-grid">
-    {{-- Chart produksi 7 hari --}}
     <div class="card">
         <div class="card-header"><h2 class="card-title">Produksi 7 Hari Terakhir</h2></div>
         @php $maxButir = max($last7days->pluck('butir')->toArray() ?: [1]); @endphp
@@ -102,20 +80,19 @@
             </div>
         </div>
     </div>
-
-    {{-- Stok per ukuran --}}
     <div class="card">
         <div class="card-header"><h2 class="card-title">Stok Gudang</h2><a href="{{ route('stock.index') }}" style="font-size:13px;color:var(--accent-gold);">Lihat Detail →</a></div>
         <div style="padding:0 24px 16px;">
-            @forelse($stocks as $s)
+            @forelse($categoryStocks as $s)
+            @php $totalButir = ($s->ikat * $papanPerIkat * $butirPerPapan) + ($s->papan * $butirPerPapan) + $s->sisa_butir; @endphp
             <div class="stock-row">
                 <div style="display:flex;align-items:center;gap:10px;">
-                    <span class="stock-badge">{{ $s->eggSize->kode ?? '-' }}</span>
-                    <span style="font-size:13px;color:var(--text-secondary);">{{ $s->eggSize->nama ?? '-' }}</span>
+                    <span class="stock-badge">{{ $s->eggCategory->kode ?? '-' }}</span>
+                    <span style="font-size:13px;color:var(--text-secondary);">{{ $s->eggCategory->nama ?? '-' }}</span>
                 </div>
                 <div style="text-align:right;">
-                    <div class="stock-butir">{{ number_format($s->jumlah_butir, 0, ',', '.') }} butir</div>
-                    <div class="stock-papan">{{ intdiv($s->jumlah_butir, 150) }} ikat {{ intdiv($s->jumlah_butir % 150, 30) }} papan</div>
+                    <div class="stock-butir">{{ number_format($totalButir, 0, ',', '.') }} butir</div>
+                    <div class="stock-papan">{{ $s->ikat }} ikat {{ $s->papan }} papan</div>
                 </div>
             </div>
             @empty
@@ -124,42 +101,37 @@
         </div>
     </div>
 </div>
-
-{{-- Harga Terkini & Produksi Terbaru --}}
 <div class="dash-grid">
-    {{-- Harga terkini --}}
     <div class="card">
-        <div class="card-header"><h2 class="card-title">Harga Terkini per Ukuran</h2><a href="{{ route('daily-prices.index') }}" style="font-size:13px;color:var(--accent-gold);">Kelola →</a></div>
+        <div class="card-header"><h2 class="card-title">Harga Terkini</h2><a href="{{ route('daily-prices.index') }}" style="font-size:13px;color:var(--accent-gold);">Kelola →</a></div>
         <div style="padding:0 24px 16px;">
-            @forelse($hargaTerkini as $h)
+            @if($activePrice)
+            @php $categories = [['kode'=>'J','nama'=>'Jumbo','harga'=>$activePrice->jumbo],['kode'=>'B','nama'=>'Besar','harga'=>$activePrice->besar],['kode'=>'S','nama'=>'Sedang','harga'=>$activePrice->sedang],['kode'=>'K','nama'=>'Kecil','harga'=>$activePrice->kecil],['kode'=>'P','nama'=>'Putih','harga'=>$activePrice->putih]]; @endphp
+            @foreach($categories as $cat)
             <div class="stock-row">
                 <div style="display:flex;align-items:center;gap:10px;">
-                    <span class="stock-badge">{{ $h->eggSize->kode ?? '-' }}</span>
-                    <div>
-                        <div style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ $h->eggSize->nama ?? '-' }}</div>
-                        <div style="font-size:11px;color:var(--text-secondary);">{{ \Carbon\Carbon::parse($h->tanggal)->isoFormat('D MMM Y') }}</div>
-                    </div>
+                    <span class="stock-badge">{{ $cat['kode'] }}</span>
+                    <div><div style="font-size:13px;font-weight:600;color:var(--text-primary);">{{ $cat['nama'] }}</div></div>
                 </div>
-                <div class="recent-val">Rp {{ number_format($h->harga_per_butir, 0, ',', '.') }}<span style="font-size:11px;font-weight:400;color:var(--text-secondary);">/butir</span></div>
+                <div class="recent-val">Rp {{ number_format($cat['harga'],0,',','.') }}/butir</div>
             </div>
-            @empty
+            @endforeach
+            @else
             <div style="padding:24px 0;text-align:center;color:var(--text-secondary);font-size:13px;">Belum ada data harga.</div>
-            @endforelse
+            @endif
         </div>
     </div>
-
-    {{-- Produksi terbaru --}}
     <div class="card">
         <div class="card-header"><h2 class="card-title">Produksi Terbaru</h2><a href="{{ route('productions.index') }}" style="font-size:13px;color:var(--accent-gold);">Semua →</a></div>
         <div style="padding:0 24px 16px;">
             @forelse($produksiTerbaru as $p)
+            @php $totalButir = $p->items->sum(fn($i) => ($i->ikat * $papanPerIkat * $butirPerPapan) + ($i->papan * $butirPerPapan) + $i->sisa_butir); @endphp
             <div class="recent-item">
                 <div class="recent-date">{{ $p->tanggal->format('d') }}</div>
                 <div class="recent-info">
-                    <div class="recent-name">{{ $p->kandang->kode ?? '-' }} &mdash; {{ $p->kandang->nama ?? '' }}</div>
-                    <div class="recent-sub">{{ $p->tanggal->isoFormat('D MMM Y') }} &bull; {{ number_format($p->total_produksi, 0, ',', '.') }} butir</div>
+                    <div class="recent-name">{{ $p->barn->kode ?? '-' }} &mdash; {{ $p->barn->nama ?? '' }}</div>
+                    <div class="recent-sub">{{ $p->tanggal->isoFormat('D MMM Y') }} &bull; {{ number_format($totalButir, 0, ',', '.') }} butir</div>
                 </div>
-                <div class="recent-val">Rp {{ number_format($p->details->sum('subtotal'), 0, ',', '.') }}</div>
             </div>
             @empty
             <div style="padding:24px 0;text-align:center;color:var(--text-secondary);font-size:13px;">Belum ada produksi.</div>
@@ -167,5 +139,4 @@
         </div>
     </div>
 </div>
-
 @endsection
