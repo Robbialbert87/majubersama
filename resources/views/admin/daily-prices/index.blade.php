@@ -7,14 +7,14 @@
 <div class="card">
     <div class="card-header"><h2 class="card-title">Harga per Tanggal Berlaku</h2><div class="btn-group" style="margin:0;"><button class="btn primary" onclick="document.getElementById('modalTambah').classList.add('active')">+ Harga Baru</button></div></div>
     <div class="search-filters"><div class="search-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="searchInput" placeholder="Cari..." oninput="filterTable()"></div></div>
-    <table class="market-table"><thead><tr><th style="text-align:center;">Tanggal Berlaku</th><th style="text-align:center;">Jumbo</th><th style="text-align:center;">Besar</th><th style="text-align:center;">Sedang</th><th style="text-align:center;">Kecil</th><th style="text-align:center;">Putih</th><th style="text-align:center;">Aksi</th></tr></thead>
+    <table class="market-table"><thead><tr><th style="text-align:center;">Tanggal Berlaku</th><th style="text-align:center;">Jumbo</th><th style="text-align:center;">Besar</th><th style="text-align:center;">Sedang</th><th style="text-align:center;">Kecil</th><th style="text-align:center;">Putih</th></tr></thead>
     <tbody>@forelse($prices as $p)<tr><td><div class="coin-cell"><div class="coin-icon btc" style="font-size:12px;">{{ $p->tanggal_berlaku->format('d') }}</div><div><div class="coin-name">{{ $p->tanggal_berlaku->format('d M Y') }}</div></div></div></td>
         <td class="price-cell" style="color:var(--gain);font-weight:600;">Rp {{ number_format($p->jumbo,0,',','.') }}</td>
         <td class="price-cell" style="color:var(--gain);font-weight:600;">Rp {{ number_format($p->besar,0,',','.') }}</td>
         <td class="price-cell" style="color:var(--gain);font-weight:600;">Rp {{ number_format($p->sedang,0,',','.') }}</td>
         <td class="price-cell" style="color:var(--gain);font-weight:600;">Rp {{ number_format($p->kecil,0,',','.') }}</td>
         <td class="price-cell" style="color:var(--gain);font-weight:600;">Rp {{ number_format($p->putih,0,',','.') }}</td>
-        <td class="text-right"><button class="btn" style="padding:8px 16px;font-size:13px;margin-right:8px;" onclick="openEdit({{ $p->id }},'{{ $p->tanggal_berlaku->format('Y-m-d') }}',{{ $p->jumbo }},{{ $p->besar }},{{ $p->sedang }},{{ $p->kecil }},{{ $p->putih }})">Edit</button><button class="btn danger" style="padding:8px 16px;font-size:13px;" onclick="openDelete({{ $p->id }},'{{ $p->tanggal_berlaku->format('d M Y') }}')">Hapus</button></td></tr>@empty<tr><td colspan="7" style="text-align:center;color:var(--text-secondary);padding:32px;">Belum ada data harga.</td></tr>@endforelse</tbody></table>
+        </td></tr>@empty<tr><td colspan="6" style="text-align:center;color:var(--text-secondary);padding:32px;">Belum ada data harga.</td></tr>@endforelse</tbody></table>
 </div>
 <div class="modal-overlay" id="modalTambah" onclick="if(event.target===this)closeModal('modalTambah')"><div class="modal" style="max-width:500px;"><div class="modal-header"><h2>Harga Baru</h2><button class="modal-close" onclick="closeModal('modalTambah')">&times;</button></div>
 <form method="POST" action="{{ route('daily-prices.store') }}">@csrf<div class="modal-body">
