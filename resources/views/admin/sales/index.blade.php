@@ -1,12 +1,12 @@
 @extends('layouts.admin')
-@section('title', 'Penjualan')
-@section('subtitle', 'Riwayat penjualan telur.')
+@section('title', 'Penjualan Manual')
+@section('subtitle', 'Riwayat penjualan manual (Jumbo & Putih).')
 @section('content')
 @if(session('success'))<div style="background:rgba(38,161,123,0.2);color:var(--gain);padding:12px 16px;border-radius:10px;margin-bottom:24px;font-size:14px;">{{ session('success') }}</div>@endif
 @if(session('error'))<div style="background:rgba(194,120,120,0.2);color:var(--loss);padding:12px 16px;border-radius:10px;margin-bottom:24px;font-size:14px;">{{ session('error') }}</div>@endif
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
-    <h2 class="card-title" style="margin:0;">Riwayat Penjualan</h2>
-    <a href="{{ route('sales.create') }}" class="btn primary">+ Penjualan Baru</a>
+    <h2 class="card-title" style="margin:0;">Riwayat Penjualan Manual</h2>
+    <a href="{{ route('sales.create') }}" class="btn primary">+ Penjualan Manual</a>
 </div>
 @if($sales->count() > 0)
 @foreach($sales as $sale)

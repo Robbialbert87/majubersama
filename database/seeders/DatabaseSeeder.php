@@ -42,7 +42,6 @@ class DatabaseSeeder extends Seeder
             ['kode' => 'S', 'nama' => 'Sedang', 'unit_penjualan' => 'ikat', 'urutan' => 3],
             ['kode' => 'K', 'nama' => 'Kecil', 'unit_penjualan' => 'ikat', 'urutan' => 4],
             ['kode' => 'P', 'nama' => 'Putih', 'unit_penjualan' => 'papan', 'urutan' => 5],
-            ['kode' => 'R', 'nama' => 'Pecah', 'unit_penjualan' => 'tidak', 'urutan' => 6],
         ] as $cat) {
             EggCategory::firstOrCreate(['kode' => $cat['kode']], [...$cat, 'status' => 'Active']);
         }

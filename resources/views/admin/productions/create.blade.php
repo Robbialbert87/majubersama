@@ -38,7 +38,8 @@
                     </div>
                 </div>
             </div>
-            <div style="font-weight:600;font-size:14px;margin-bottom:12px;color:var(--text-primary);">Jumlah Produksi per Kategori</div>
+
+            <div class="section-divider">HASIL SORTIR</div>
             <div style="display:grid;grid-template-columns:90px 1fr;gap:12px;padding:8px 0;font-size:12px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.5px;">
                 <span>Kategori</span><span>Input (Ikat / Papan / Sisa Butir)</span>
             </div>
@@ -68,9 +69,34 @@
                 </div>
             </div>
             @endforeach
+
+            <div class="section-divider" style="margin-top:24px;">KERUSAKAN</div>
+            <div class="size-row">
+                <div>
+                    <div class="size-badge" style="background:var(--loss);">R</div>
+                </div>
+                <div>
+                    <div class="size-label">Telur Pecah</div>
+                    <div style="display:flex;gap:8px;margin-top:8px;max-width:200px;">
+                        <div style="flex:1;">
+                            <input type="number" name="pecah" class="form-input" style="padding:10px;" placeholder="0" min="0" value="{{ $existingPecah ?? '' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;">
+                <div class="form-group">
+                    <label class="form-label">Catatan</label>
+                    <div class="form-input-wrapper">
+                        <textarea name="catatan" class="form-input" style="min-height:70px;padding:12px;resize:vertical;" placeholder="Catatan (opsional)">{{ $existingCatatan ?? '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
             <div style="margin-top:24px;display:flex;gap:12px;justify-content:flex-end;">
                 <a href="{{ route('productions.index') }}" class="btn">Batal</a>
-                <button type="submit" class="btn primary">Simpan Produksi</button>
+                <button type="submit" class="btn primary">Simpan</button>
             </div>
         </form>
     </div>
@@ -80,6 +106,7 @@
 .sortir-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;overflow:hidden;max-width:700px;}
 .sortir-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border-color);}
 .sortir-body{padding:24px;}
+.section-divider{font-weight:700;font-size:13px;color:var(--text-primary);margin-bottom:12px;padding:8px 0;border-bottom:1px solid var(--border-color);text-transform:uppercase;letter-spacing:1px;}
 .size-row{display:grid;grid-template-columns:90px 1fr;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--border-color);}
 .size-row:last-child{border-bottom:none;}
 .size-badge{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:var(--accent-copper);color:#fff;font-weight:700;font-size:16px;}

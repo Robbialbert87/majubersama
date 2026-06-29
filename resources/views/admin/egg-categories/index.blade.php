@@ -15,7 +15,7 @@
 <form method="POST" action="{{ route('egg-categories.store') }}">@csrf<div class="modal-body">
 <div class="form-group"><label class="form-label">Kode</label><div class="form-input-wrapper"><input type="text" name="kode" class="form-input" placeholder="J" required></div></div>
 <div class="form-group"><label class="form-label">Nama</label><div class="form-input-wrapper"><input type="text" name="nama" class="form-input" placeholder="Jumbo" required></div></div>
-<div class="form-row"><div class="form-group"><label class="form-label">Unit Penjualan</label><div class="form-input-wrapper"><select name="unit_penjualan" class="form-input" required><option value="papan">Papan</option><option value="ikat">Ikat</option><option value="tidak">Tidak Dijual</option></select></div></div>
+<div class="form-row"><div class="form-group"><label class="form-label">Unit Penjualan</label><div class="form-input-wrapper"><select name="unit_penjualan" class="form-input" required><option value="papan">Papan</option><option value="ikat">Ikat</option></select></div></div>
 <div class="form-group"><label class="form-label">Urutan</label><div class="form-input-wrapper"><input type="number" name="urutan" class="form-input" value="0" min="0" required></div></div></div>
 <div class="form-group"><label class="form-label">Status</label><div class="form-input-wrapper"><select name="status" class="form-input" required><option value="Active">Aktif</option><option value="Inactive">Nonaktif</option></select></div></div></div>
 <div class="modal-footer"><button type="button" class="btn" onclick="closeModal('modalTambah')">Batal</button><button type="submit" class="btn primary">Simpan</button></div></form></div></div>
@@ -23,7 +23,7 @@
 <form method="POST" id="editForm">@csrf @method('PUT')<div class="modal-body">
 <div class="form-group"><label class="form-label">Kode</label><div class="form-input-wrapper"><input type="text" name="kode" id="editKode" class="form-input" required></div></div>
 <div class="form-group"><label class="form-label">Nama</label><div class="form-input-wrapper"><input type="text" name="nama" id="editNama" class="form-input" required></div></div>
-<div class="form-row"><div class="form-group"><label class="form-label">Unit Penjualan</label><div class="form-input-wrapper"><select name="unit_penjualan" id="editUnit" class="form-input" required><option value="papan">Papan</option><option value="ikat">Ikat</option><option value="tidak">Tidak Dijual</option></select></div></div>
+<div class="form-row"><div class="form-group"><label class="form-label">Unit Penjualan</label><div class="form-input-wrapper"><select name="unit_penjualan" id="editUnit" class="form-input" required><option value="papan">Papan</option><option value="ikat">Ikat</option></select></div></div>
 <div class="form-group"><label class="form-label">Urutan</label><div class="form-input-wrapper"><input type="number" name="urutan" id="editUrutan" class="form-input" min="0" required></div></div></div>
 <div class="form-group"><label class="form-label">Status</label><div class="form-input-wrapper"><select name="status" id="editStatus" class="form-input" required><option value="Active">Aktif</option><option value="Inactive">Nonaktif</option></select></div></div></div>
 <div class="modal-footer"><button type="button" class="btn" onclick="closeModal('modalEdit')">Batal</button><button type="submit" class="btn primary">Simpan Perubahan</button></div></form></div></div>

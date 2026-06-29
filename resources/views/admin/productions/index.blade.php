@@ -8,6 +8,9 @@
     <h2 class="card-title" style="margin:0;">Riwayat Produksi</h2>
     <a href="{{ route('productions.create') }}" class="btn primary">+ Input Produksi</a>
 </div>
+<form method="GET" style="display:flex;gap:12px;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;">
+    <div class="form-group" style="margin:0;"><label class="form-label">Tanggal</label><div class="form-input-wrapper"><input type="date" name="tanggal" class="form-input" value="{{ $tanggal }}" onchange="this.form.submit()"></div></div>
+</form>
 @if($productions->count() > 0)
 @php $grouped = $productions->groupBy(fn($p) => $p->barn_id); @endphp
 @foreach($grouped as $barnId => $prods)
@@ -28,8 +31,9 @@
             @endforeach
         </div>
     </div>
-    @php $grand = ['ikat'=>0,'papan'=>0,'sisa_butir'=>0]; @endphp
+    @php $grand = ['ikat'=>0,'papan'=>0,'sisa_butir'=>0,'pecah'=>0]; @endphp
     @foreach($prods as $p)
+        @php $grand['pecah'] += $p->pecah; @endphp
         @foreach($p->items as $item)
             @php
                 $grand['ikat'] += $item->ikat;
@@ -55,6 +59,17 @@
                             <td class="num">{{ $item->sisa_butir }}</td>
                         </tr>
                         @endforeach
+                        @if($p->pecah > 0)
+                        <tr>
+                            <td style="border-bottom:2px solid var(--border-color);">
+                                <span class="size-badge-sm" style="background:var(--loss);">R</span>
+                                <span class="size-name">Pecah</span>
+                            </td>
+                            <td class="num" style="border-bottom:2px solid var(--border-color);">-</td>
+                            <td class="num" style="border-bottom:2px solid var(--border-color);">-</td>
+                            <td class="num" style="border-bottom:2px solid var(--border-color);">{{ $p->pecah }}</td>
+                        </tr>
+                        @endif
                     @endforeach
                     <tr class="total-row">
                         <td class="total-label">TOTAL {{ $barn->kode ?? '' }}</td>
@@ -82,12 +97,27 @@
                 </div>
             </div>
             @endforeach
+            @if($p->pecah > 0)
+            <div class="prod-card">
+                <div class="prod-card-top">
+                    <span class="size-badge-sm" style="background:var(--loss);">R</span>
+                    <span class="prod-card-title">Pecah</span>
+                    <span class="prod-card-date">{{ $p->tanggal->format('d M Y') }}</span>
+                </div>
+                <div class="prod-card-stats">
+                    <div class="prod-stat"><span class="prod-stat-label">Butir</span><span class="prod-stat-val total">{{ $p->pecah }}</span></div>
+                </div>
+            </div>
+            @endif
         @endforeach
         <div class="prod-card prod-card-total">
             <div class="prod-card-stats">
                 <div class="prod-stat"><span class="prod-stat-label">Total Ikat</span><span class="prod-stat-val total">{{ $grand['ikat'] }}</span></div>
                 <div class="prod-stat"><span class="prod-stat-label">Total Papan</span><span class="prod-stat-val total">{{ $grand['papan'] }}</span></div>
                 <div class="prod-stat"><span class="prod-stat-label">Total Sisa</span><span class="prod-stat-val total">{{ $grand['sisa_butir'] }}</span></div>
+                @if($grand['pecah'] > 0)
+                <div class="prod-stat"><span class="prod-stat-label">Pecah</span><span class="prod-stat-val total" style="color:var(--loss);">{{ $grand['pecah'] }}</span></div>
+                @endif
             </div>
         </div>
     </div>

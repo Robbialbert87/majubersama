@@ -64,7 +64,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/produksi-mingguan', [LaporanController::class, 'produksiMingguan'])->name('laporan.produksi-mingguan');
     Route::get('/laporan/produksi-bulanan', [LaporanController::class, 'produksiBulanan'])->name('laporan.produksi-bulanan');
     Route::get('/laporan/penjualan', [LaporanController::class, 'penjualan'])->name('laporan.penjualan');
+    Route::get('/laporan/penjualan-kontrak', [LaporanController::class, 'penjualanKontrak'])->name('laporan.penjualan-kontrak');
     Route::get('/laporan/stock-gudang', [LaporanController::class, 'stockGudang'])->name('laporan.stock-gudang');
+    Route::get('/laporan/telur-pecah', [LaporanController::class, 'telurPecah'])->name('laporan.telur-pecah');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

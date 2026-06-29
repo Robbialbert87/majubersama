@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-dashboard.css') }}?v={{ filemtime(public_path('css/template/templatemo-crypto-dashboard.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-pages.css') }}?v={{ filemtime(public_path('css/template/templatemo-crypto-pages.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/template/templatemo-crypto-pwa.css') }}?v={{ filemtime(public_path('css/template/templatemo-crypto-pwa.css')) }}">
-    <style>.market-table td::before{content:none!important;display:none!important}</style>
+    <style>.market-table td::before{content:none!important;display:none!important}input[type=date]{color-scheme:dark}input[type=date]::-webkit-calendar-picker-indicator{filter:brightness(0) invert(.8);cursor:pointer;opacity:.7}input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1}</style>
     @stack('styles')
 </head>
 <body>
@@ -64,7 +64,7 @@
                 <rect x="3" y="14" width="7" height="7" rx="1"/>
                 <rect x="14" y="14" width="7" height="7" rx="1"/>
             </svg>
-            <span>Dashboard</span>
+            <span>Home</span>
         </a>
         <a href="{{ route('productions.index') }}" class="bottom-nav-item {{ request()->routeIs('productions.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -79,13 +79,13 @@
             </svg>
             <span>Harga</span>
         </a>
-        <a href="{{ route('sales.create') }}" class="bottom-nav-item {{ request()->routeIs('sales.create') ? 'active' : '' }}">
+        <a href="{{ route('laporan.penjualan-kontrak') }}" class="bottom-nav-item {{ request()->routeIs('laporan.penjualan-kontrak') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
             </svg>
-            <span>Jual</span>
+            <span>Penjualan</span>
         </a>
         <a href="{{ route('stock.index') }}" class="bottom-nav-item {{ request()->routeIs('stock.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

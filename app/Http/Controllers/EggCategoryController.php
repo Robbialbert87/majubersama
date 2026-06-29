@@ -18,7 +18,7 @@ class EggCategoryController extends Controller
         $validated = $request->validate([
             'kode' => 'required|string|max:10|unique:egg_categories',
             'nama' => 'required|string|max:100',
-            'unit_penjualan' => 'required|string|in:papan,ikat,tidak',
+            'unit_penjualan' => 'required|string|in:papan,ikat',
             'urutan' => 'required|integer|min:0',
             'status' => 'required|string|in:Active,Inactive',
         ]);
@@ -32,7 +32,7 @@ class EggCategoryController extends Controller
         $validated = $request->validate([
             'kode' => 'required|string|max:10|unique:egg_categories,kode,' . $id,
             'nama' => 'required|string|max:100',
-            'unit_penjualan' => 'required|string|in:papan,ikat,tidak',
+            'unit_penjualan' => 'required|string|in:papan,ikat',
             'urutan' => 'required|integer|min:0',
             'status' => 'required|string|in:Active,Inactive',
         ]);

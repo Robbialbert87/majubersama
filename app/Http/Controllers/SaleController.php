@@ -22,7 +22,7 @@ class SaleController extends Controller
     public function create(Request $request)
     {
         $categories = EggCategory::where('status', 'Active')
-            ->where('unit_penjualan', '!=', 'tidak')
+            ->whereIn('kode', ['J', 'P'])
             ->orderBy('urutan')
             ->get();
         $stocks = Stock::with('eggCategory')->get()->keyBy('egg_category_id');
@@ -99,6 +99,10 @@ class SaleController extends Controller
                 }
 
                 $category = EggCategory::findOrFail($detail['egg_category_id']);
+
+                if (!in_array($category->kode, ['J', 'P'])) {
+                    continue;
+                }
 
                 // Get price from active price
                 $hargaPerButir = 0;

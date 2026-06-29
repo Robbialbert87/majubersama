@@ -1,12 +1,12 @@
 @extends('layouts.admin')
-@section('title', 'Penjualan Baru')
-@section('subtitle', 'Input penjualan telur. Harga otomatis dari harga aktif.')
+@section('title', 'Penjualan Manual Baru')
+@section('subtitle', 'Input penjualan manual (Jumbo & Putih). Harga otomatis dari harga aktif.')
 @section('content')
 @if(session('error'))<div style="background:rgba(194,120,120,0.2);color:var(--loss);padding:12px 16px;border-radius:10px;margin-bottom:24px;font-size:14px;">{{ session('error') }}</div>@endif
 @if($errors->any())<div style="background:rgba(194,120,120,0.2);color:var(--loss);padding:12px 16px;border-radius:10px;margin-bottom:24px;font-size:14px;">@foreach($errors->all() as $e){{ $e }}<br>@endforeach</div>@endif
 <div class="sortir-card">
     <div class="sortir-header">
-        <h2 class="card-title" style="margin:0;">Penjualan Baru</h2>
+        <h2 class="card-title" style="margin:0;">Penjualan Manual Baru</h2>
         <a href="{{ route('sales.index') }}" class="btn" style="margin:0;">Kembali</a>
     </div>
     <div class="sortir-body">
