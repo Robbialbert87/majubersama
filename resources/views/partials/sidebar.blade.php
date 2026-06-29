@@ -18,6 +18,9 @@
         </a>
     </nav>
 
+    @php $role = strtolower(auth()->user()->role ?? ''); @endphp
+
+    @if($role === 'admin')
     <nav class="nav-section">
         <div class="nav-label">Master Data</div>
         <a href="{{ route('barns.index') }}" class="nav-item {{ request()->routeIs('barns.*') ? 'active' : '' }}">
@@ -41,9 +44,11 @@
             Pengaturan
         </a>
     </nav>
+    @endif
 
     <nav class="nav-section">
         <div class="nav-label">Transaksi</div>
+        @if(in_array($role, ['admin', 'keuangan']))
         <a href="{{ route('daily-prices.index') }}" class="nav-item {{ request()->routeIs('daily-prices.*') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="1" x2="12" y2="23"/>
@@ -51,12 +56,16 @@
             </svg>
             Harga Berlaku
         </a>
+        @endif
+        @if(in_array($role, ['admin', 'peternak']))
         <a href="{{ route('productions.index') }}" class="nav-item {{ request()->routeIs('productions.*') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
             Input Produksi
         </a>
+        @endif
+        @if(in_array($role, ['admin', 'keuangan']))
         <a href="{{ route('sales.index') }}" class="nav-item {{ request()->routeIs('sales.*') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"></circle>
@@ -65,6 +74,7 @@
             </svg>
             Penjualan Manual
         </a>
+        @endif
     </nav>
 
     <nav class="nav-section">
@@ -94,6 +104,7 @@
             </svg>
             Produksi Bulanan
         </a>
+        @if(in_array($role, ['admin', 'keuangan']))
         <a href="{{ route('laporan.penjualan-kontrak') }}" class="nav-item {{ request()->routeIs('laporan.penjualan-kontrak') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -108,6 +119,7 @@
             </svg>
             Penjualan Manual
         </a>
+        @endif
         <a href="{{ route('laporan.telur-pecah') }}" class="nav-item {{ request()->routeIs('laporan.telur-pecah') ? 'active' : '' }}">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 2a8 8 0 00-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 00-8-8z"/>

@@ -56,6 +56,8 @@
         <div class="top-bar-title">@yield('title', 'Dashboard')</div>
     </div>
 
+    @php $role = strtolower(auth()->user()->role ?? ''); @endphp
+
     <nav class="bottom-nav">
         <a href="{{ route('dashboard') }}" class="bottom-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -66,12 +68,15 @@
             </svg>
             <span>Home</span>
         </a>
+        @if(in_array($role, ['admin', 'peternak']))
         <a href="{{ route('productions.index') }}" class="bottom-nav-item {{ request()->routeIs('productions.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
             <span>Produksi</span>
         </a>
+        @endif
+        @if(in_array($role, ['admin', 'keuangan']))
         <a href="{{ route('daily-prices.index') }}" class="bottom-nav-item {{ request()->routeIs('daily-prices.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="1" x2="12" y2="23"/>
@@ -87,6 +92,7 @@
             </svg>
             <span>Penjualan</span>
         </a>
+        @endif
         <a href="{{ route('stock.index') }}" class="bottom-nav-item {{ request()->routeIs('stock.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="3" width="20" height="14" rx="2"/>
